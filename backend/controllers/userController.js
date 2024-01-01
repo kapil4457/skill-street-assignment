@@ -129,7 +129,7 @@ exports.logoutUser = async (req, res) => {
     });
     return await res
       .status(200)
-      .send({ success: false, message: "Logged-out successfully." });
+      .send({ success: true, message: "Logged-out successfully." });
   } catch (err) {
     return await res.status(400).send({ success: false, message: err.stack });
   }
