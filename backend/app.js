@@ -20,7 +20,7 @@ const note = require("./routes/noteRoutes.js");
 const user = require("./routes/userRoutes.js");
 
 app.use("/api/v1/", note);
-app.use("/api/v1/", user);
+app.use("/api/v1/user/", user);
 // Listening to port
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port : ${process.env.PORT} `);
