@@ -98,3 +98,20 @@ exports.loginUser = async (req, res) => {
     await res.status(400).send({ success: false, message: err.stack });
   }
 };
+
+exports.logoutUser = async (req, res) => {
+  try {
+    const user = req.user;
+    console.log("user :", user);
+    if (!user) {
+      return await res
+        .status(400)
+        .send({ success: false, message: "You have not logged in yet." });
+    }
+    return await res
+      .status(200)
+      .send({ success: false, message: "Logged-out successfully." });
+  } catch (err) {
+    return await res.status(400).send({ success: false, message: err.stack });
+  }
+};
