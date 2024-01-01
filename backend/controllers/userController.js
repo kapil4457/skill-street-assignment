@@ -6,12 +6,15 @@ exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check : If all values are provided
     if (!name || !email || !password) {
       await res
         .status(400)
         .send({ success: false, message: "Please fill in all the details" });
       return;
     }
+
+    // Check : If the given email is in correct format
 
     if (!validator.isEmail(email)) {
       await res
@@ -20,6 +23,14 @@ exports.registerUser = async (req, res) => {
       return;
     }
 
+    // Check : Email is not empty
+    if (validator.isEmpty(email)) {
+      await res
+        .status(400)
+        .send({ success: false, message: "Email can not be empty" });
+      return;
+    }
+    // Check : Password is not empty
     if (validator.isEmpty(password)) {
       await res
         .status(400)
@@ -27,12 +38,15 @@ exports.registerUser = async (req, res) => {
       return;
     }
 
+    // Check : Name is not empty
     if (validator.isEmpty(name)) {
       await res
         .status(400)
         .send({ success: false, message: "Name can not be empty" });
       return;
     }
+
+    // Check : "name" should of length 3 to 20 characters
     if (!validator.isLength(name, { min: 3, max: 20 })) {
       await res.status(400).send({
         success: false,
@@ -40,8 +54,16 @@ exports.registerUser = async (req, res) => {
       });
       return;
     }
+    // Check : "name" should be of minimum length 10 characters
+    if (!validator.isLength(password, { min: 3 })) {
+      await res.status(400).send({
+        success: false,
+        message: "Name should be in the range of 3-20 characters",
+      });
+      return;
+    }
 
-    // check if user already exists
+    // Check :  If user already exists
     const user = User.find({ email });
     if (user) {
       await res.status(400).send({
@@ -62,11 +84,10 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// Login as a user
-
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    // Check : If all values are provided
     if (!email || !password) {
       await res
         .status(400)
@@ -74,6 +95,7 @@ exports.loginUser = async (req, res) => {
       return;
     }
 
+    // Check : If the user exists
     const user = await User.findOne({ email });
     if (!user) {
       await res
@@ -82,6 +104,7 @@ exports.loginUser = async (req, res) => {
       return;
     }
 
+    // Check : Is the password correct ?
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
@@ -99,6 +122,7 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
+    // Remove the cookie
     await res.cookie("token", null, {
       expires: new Date(Date.now()),
       httpOnly: true,

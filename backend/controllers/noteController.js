@@ -5,17 +5,14 @@ exports.createNote = async (req, res) => {
   try {
     const { title, description } = req.body;
 
-    const user = req.user;
-    if (!user) {
-      return await res
-        .status(400)
-        .send({ success: false, message: "Please log-in to create a note." });
-    }
+    // Check : If all values are provided
     if (!title || !description) {
       return await res
         .status(400)
         .send({ success: false, message: "Please fill in all the details" });
     }
+
+    // Check  : Is title or description length == 0
 
     if (validator.isEmpty(title) || validator.isEmpty(description)) {
       return await res
@@ -23,12 +20,14 @@ exports.createNote = async (req, res) => {
         .send({ success: false, message: "Please fill in all the details." });
     }
 
+    // Check  : Is title length in the range of 5-30 characters
     if (!validator.isLength(title, { max: 30, min: 5 })) {
       return await res.status(400).send({
         success: false,
         message: "Title length must be in the range of 5-30 characters.",
       });
     }
+    // Check  : Is description length in the range of 5-100 characters
     if (!validator.isLength(description, { max: 100, min: 5 })) {
       return await res.status(400).send({
         success: false,
@@ -55,24 +54,29 @@ exports.createNote = async (req, res) => {
 exports.updateNote = async (req, res) => {
   try {
     const { id, title, description } = req.body;
+
+    // Check : If all fields are given
     if (!id || !title || !description) {
       return await res.status(401).send({
         success: false,
         message: "Please fill in all the details.",
       });
     }
+    // Check : If length of any field == 0
     if (validator.isEmpty(title) || validator.isEmpty(description)) {
       return await res
         .status(400)
         .send({ success: false, message: "Please fill in all the details." });
     }
 
+    // Check : If length of title is in range of 5-30 characters
     if (!validator.isLength(title, { max: 30, min: 5 })) {
       return await res.status(400).send({
         success: false,
         message: "Title length must be in the range of 5-30 characters.",
       });
     }
+    // Check : If description of title is in range of 5-100 characters
     if (!validator.isLength(description, { max: 100, min: 5 })) {
       return await res.status(400).send({
         success: false,
@@ -88,6 +92,7 @@ exports.updateNote = async (req, res) => {
       });
     }
 
+    // Check  : Does the user who created this request actually owns this note ?
     if (note.owner != req.user.id) {
       return await res.status(401).send({
         success: false,
@@ -96,6 +101,7 @@ exports.updateNote = async (req, res) => {
     }
     note.title = title;
     note.description = description;
+    note.updatedAt = Date.now;
     await note.save();
     return await res.status(401).send({
       success: true,
@@ -110,6 +116,7 @@ exports.getNote = async (req, res) => {
   try {
     const id = await req.params.id;
     console.log(id);
+    // Check : Are we provided with an id ?
     if (!id) {
       return await res.status(400).send({
         success: false,
@@ -118,6 +125,7 @@ exports.getNote = async (req, res) => {
     }
 
     const note = await Note.findOne({ _id: id });
+    // Check : Does the requested note exists ?
     if (!note) {
       return await res.status(400).send({
         success: false,
@@ -125,6 +133,7 @@ exports.getNote = async (req, res) => {
       });
     }
 
+    // Check  : Does the user who created this request actually owns this note
     if (note.owner != req.user.id) {
       return await res.status(401).send({
         success: false,
@@ -144,6 +153,8 @@ exports.getNote = async (req, res) => {
 exports.deleteNote = async (req, res) => {
   try {
     const id = await req.params.id;
+
+    // Check  : Are we provided with an id ?
     if (!id) {
       return await res.status(400).send({
         success: false,
@@ -152,6 +163,7 @@ exports.deleteNote = async (req, res) => {
     }
 
     const note = await Note.findOne({ _id: id });
+    // Is there a note with the provided id
     if (!note) {
       return await res.status(400).send({
         success: false,
@@ -159,6 +171,7 @@ exports.deleteNote = async (req, res) => {
       });
     }
 
+    // Check  : Does the user who created this request actually owns this note
     if (note.owner != req.user.id) {
       return await res.status(400).send({
         success: false,
