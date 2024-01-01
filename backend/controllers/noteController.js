@@ -108,6 +108,34 @@ exports.updateNote = async (req, res) => {
 
 exports.getNote = async (req, res) => {
   try {
+    const id = await req.params.id;
+    console.log(id);
+    if (!id) {
+      return await res.status(400).send({
+        success: false,
+        message: "Please specify the note id",
+      });
+    }
+
+    const note = await Note.findOne({ _id: id });
+    if (!note) {
+      return await res.status(400).send({
+        success: false,
+        message: "This note does not exists.",
+      });
+    }
+
+    if (note.owner != req.user.id) {
+      return await res.status(401).send({
+        success: false,
+        message: "You do not own this note.",
+      });
+    }
+
+    return await res.status(200).send({
+      success: true,
+      note,
+    });
   } catch (err) {
     return await res.status(400).send({ success: false, message: err.stack });
   }
