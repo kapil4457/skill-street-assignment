@@ -101,7 +101,7 @@ exports.updateNote = async (req, res) => {
     }
     note.title = title;
     note.description = description;
-    note.updatedAt = Date.now();
+    note.updatedAt = new Date().toISOString();
     await note.save();
     return await res.status(401).send({
       success: true,
