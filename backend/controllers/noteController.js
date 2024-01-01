@@ -178,6 +178,14 @@ exports.deleteNote = async (req, res) => {
 
 exports.getAllNotes = async (req, res) => {
   try {
+    const notes = await Note.find({
+      owner: req.user.id,
+    });
+
+    return await res.status(200).send({
+      success: true,
+      notes,
+    });
   } catch (err) {
     return await res.status(400).send({ success: false, message: err.stack });
   }

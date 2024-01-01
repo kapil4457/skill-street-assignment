@@ -13,5 +13,5 @@ router
   .route("/note/:id")
   .get(isAuthenticatedUser, getNote)
   .delete(isAuthenticatedUser, deleteNote);
-router.route("/notes/all").get(isAuthenticatedUser, getAllNotes);
+router.route("/all").get(isAuthenticatedUser, getAllNotes);
 module.exports = router;
