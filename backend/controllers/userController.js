@@ -1,5 +1,6 @@
 const User = require("../schema/UserModel");
 const validator = require("validator");
+const sendToken = require("../utils/sendToken");
 // Register a new User
 exports.registerUser = async (req, res) => {
   try {
@@ -53,9 +54,8 @@ exports.registerUser = async (req, res) => {
 
     await User.create({ name, password, email });
 
-    await res
-      .status(201)
-      .send({ success: true, message: "User created successfully" });
+    sendToken(user, 201, res, "User created successfully");
+    return;
   } catch (err) {
     await res.status(401).send({ success: false, message: err.stack });
     return;
@@ -91,9 +91,7 @@ exports.loginUser = async (req, res) => {
       return;
     }
 
-    await res
-      .status(200)
-      .send({ success: true, message: "Logged-in successfully." });
+    sendToken(user, 200, res, "Logged-in successfully");
   } catch (err) {
     await res.status(400).send({ success: false, message: err.stack });
   }
@@ -101,13 +99,10 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    const user = req.user;
-    console.log("user :", user);
-    if (!user) {
-      return await res
-        .status(400)
-        .send({ success: false, message: "You have not logged in yet." });
-    }
+    await res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
     return await res
       .status(200)
       .send({ success: false, message: "Logged-out successfully." });

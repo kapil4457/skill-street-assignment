@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const app = express();
+const cors = require("cors");
 
 // .env config
 dotenv.config({
@@ -14,6 +15,7 @@ require("./database");
 // middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: "50mb" }));
+app.use(cors());
 
 // Routers
 const note = require("./routes/noteRoutes.js");
