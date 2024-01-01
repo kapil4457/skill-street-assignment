@@ -64,7 +64,7 @@ exports.registerUser = async (req, res) => {
     }
 
     // Check :  If user already exists
-    const user = User.find({ email });
+    const user = await User.findOne({ email: email });
     if (user) {
       await res.status(400).send({
         success: false,
@@ -74,9 +74,9 @@ exports.registerUser = async (req, res) => {
       return;
     }
 
-    await User.create({ name, password, email });
+    const newUser = await User.create({ name, password, email });
 
-    sendToken(user, 201, res, "User created successfully");
+    sendToken(newUser, 201, res, "User created successfully");
     return;
   } catch (err) {
     await res.status(401).send({ success: false, message: err.stack });
