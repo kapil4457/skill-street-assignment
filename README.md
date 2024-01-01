@@ -4,6 +4,9 @@
 
 #### Protected path are those paths which can be accessed only after logging-in the application.
 
+#### Temporary account : 
+     password : temp@1234
+     email : temp@hotmail.com
 ## User endpoints :
 
 ### 1. Register User
