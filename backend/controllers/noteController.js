@@ -143,6 +143,34 @@ exports.getNote = async (req, res) => {
 
 exports.deleteNote = async (req, res) => {
   try {
+    const id = await req.params.id;
+    if (!id) {
+      return await res.status(400).send({
+        success: false,
+        message: "Please enter an id",
+      });
+    }
+
+    const note = await Note.findOne({ _id: id });
+    if (!note) {
+      return await res.status(400).send({
+        success: false,
+        message: "A note with this id does not exists.",
+      });
+    }
+
+    if (note.owner != req.user.id) {
+      return await res.status(400).send({
+        success: false,
+        message: "You do not own this note.",
+      });
+    }
+
+    await Note.deleteOne({ _id: id });
+    return await res.status(200).send({
+      success: true,
+      message: "Note deleted successfully.",
+    });
   } catch (err) {
     return await res.status(400).send({ success: false, message: err.stack });
   }
